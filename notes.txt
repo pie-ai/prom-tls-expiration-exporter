@@ -1,4 +1,3 @@
-
 Read the SSL Certificate information from a remote server
 Source: https://ma.ttias.be/how-to-read-ssl-certificate-info-from-the-cli/
 $ openssl s_client -showcerts -connect ma.ttias.be:443
