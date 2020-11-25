@@ -1,4 +1,8 @@
 # prometheus exporter that analyses tls expiration
+very simple and limited prometheus exporter for tls endpoints. works with common tls encrypted protocols like https / smtps / imaps / pop3s but not with STARTTLS variants.
+
+* developed in rust
+* simple
 
 ## docker
 
