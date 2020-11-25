@@ -29,11 +29,6 @@ COPY src ./src
 
 RUN cat Cargo.toml
 
-#RUN echo "[[bin]]" >> Cargo.toml
-#RUN echo "name = \"prom-tls-expiration-exporter\"" >> Cargo.toml
-#RUN echo "path = \"src/bin/prom-tls-expiration-exporter.rs\"" >> Cargo.toml
-#RUN cat Cargo.toml
-
 RUN cargo build --release
 RUN ls -la ${WORKDIR}/target/release
 
