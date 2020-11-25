@@ -3,8 +3,6 @@ use std::fs::File;
 use std::io::BufReader;
 use serde::Deserialize;
 use std::error::Error;
-use std::io;
-use std::process;
 use log::{info, trace, debug};
 use std::env;
 use prometheus_exporter_base::{render_prometheus, MetricType, PrometheusMetric};
@@ -20,7 +18,7 @@ struct Endpoint {
 }
 
 struct Args {
-    help: bool,
+    //help: bool,
     verbose: bool,
     endpoints: String,
     port: u16,
@@ -30,14 +28,14 @@ struct Args {
 async fn main() -> Result<(), Box<dyn Error>> {
     let mut args = pico_args::Arguments::from_env();
 
-    if (args.contains(["-h", "--help"]))
+    if args.contains(["-h", "--help"])
     {
-        println!("usage: \n-h / --help: show this help\n-v / --verbose: enable verbose logging\n--endpoints filename.csv: Use Endpoints from csv (Format: host,port)\n--port: use port to listen to instead of 6661");
+        println!("usage: \n\t-h / --help: show this help\n\t-v / --verbose: enable verbose logging\n\t--endpoints filename.csv: Use Endpoints from csv (Format: host,port)\n\t--port: use port to listen to instead of 6661");
         return Ok(());
     }
 
     let args = Args {
-        help: args.contains(["-h", "--help"]),
+        //help: args.contains(["-h", "--help"]),
         verbose: args.contains(["-v", "--verbose"]),
         endpoints: args.value_from_str("--endpoints").unwrap(),
         port: 6661,
@@ -69,7 +67,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             let input = File::open(endpoints.as_str()).unwrap();
             let buffered = BufReader::new(input);
             let mut rdr = csv::Reader::from_reader(buffered);
-            let expiration_metric = PrometheusMetric::new("tls_expiration", MetricType::Counter, "expiration of tls certificates");
+            let expiration_metric = PrometheusMetric::new("tls_expiration", MetricType::Summary, "expiration of tls certificates");
             let mut expiration_buf = expiration_metric.render_header();
 
             for entry in rdr.deserialize() {
@@ -80,15 +78,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 let mut attributes: Vec<(&str, &str)> = Vec::new();
                 attributes.push(("host", &record.host));
 
-                let mut port_str = format!("{}", record.port);
+                let port_str = format!("{}", record.port);
                 attributes.push(("port", &port_str));
 
                 expiration_buf.push_str(&expiration_metric.render_sample(Some(attributes.as_slice()), expiration.days()));
             }
 
 
-            let mut s = expiration_buf;
-            Ok(s)
+            Ok(expiration_buf)
         }
     })
         .await;
