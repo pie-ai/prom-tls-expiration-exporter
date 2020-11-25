@@ -1,0 +1,9 @@
+
+Read the SSL Certificate information from a remote server
+Source: https://ma.ttias.be/how-to-read-ssl-certificate-info-from-the-cli/
+$ openssl s_client -showcerts -connect ma.ttias.be:443
+
+Validate that TLS is spoken:
+$ openssl s_client -showcerts -connect imap.gmail.com:993
+$ openssl s_client -showcerts -connect pop.gmail.com:995
+$ openssl s_client -showcerts -connect google.com:443

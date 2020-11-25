@@ -1,0 +1,4 @@
+host,port
+google.com,443
+pop.gmail.com,995
+imap.gmail.com,993
