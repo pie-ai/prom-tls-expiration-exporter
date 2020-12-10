@@ -1,4 +1,4 @@
-use ssl_expiration::SslExpiration;
+use ssl_expiration2::SslExpiration;
 use std::fs::File;
 use std::io::BufReader;
 use serde::Deserialize;
@@ -73,7 +73,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             for entry in rdr.deserialize() {
                 let record: Endpoint = entry?;
                 debug!("endpoint: {:?}:{:?}", record.host, record.port);
-                let expiration = SslExpiration::from_addr(format!("{}:{}", record.host, record.port)).unwrap();
+                let expiration = SslExpiration::from_addr(format!("{}:{}", record.host, record.port), &record.host, 1000).unwrap();
                 debug!("tls certificate for {}:{} expires in {} days", record.host, record.port, expiration.days());
                 let mut attributes: Vec<(&str, &str)> = Vec::new();
                 attributes.push(("host", &record.host));
