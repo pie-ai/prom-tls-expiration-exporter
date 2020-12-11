@@ -12,7 +12,7 @@ RUN mkdir -p ${BASEDIR} ; cd ${BASEDIR} && USER=root cargo new --bin ${PROJECT_N
 WORKDIR ${WORKDIR}
 
 RUN cargo add csv@1.1
-RUN cargo add ssl-expiration2@0.2.2                                                         │
+RUN cargo add ssl-expiration2@0.2.2
 RUN cargo add --features=derive serde@1.0
 RUN cargo add prometheus_exporter_base@0.30.3
 RUN cargo add futures@0.1.25
