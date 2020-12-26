@@ -77,7 +77,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     Err(e) => {
                         //panic!("could not check tls expiration: {:?}", e);
                         error!("could not check tls expiration: {:?}", e);
-                        i32::MIN
+                        -1
                     }
                 };
 
