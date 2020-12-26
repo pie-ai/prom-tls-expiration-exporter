@@ -3,7 +3,7 @@ use std::fs::File;
 use std::io::BufReader;
 use serde::Deserialize;
 use std::error::Error;
-use log::{info, trace, debug};
+use log::{info, trace, debug, error};
 use std::env;
 use prometheus_exporter_base::{render_prometheus, MetricType, PrometheusMetric};
 
@@ -51,8 +51,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
 
-
-
     let addr = ([0, 0, 0, 0], args.port).into();
     info!("starting exporter on {}", addr);
     let endpoints = args.endpoints.clone();
@@ -73,15 +71,25 @@ async fn main() -> Result<(), Box<dyn Error>> {
             for entry in rdr.deserialize() {
                 let record: Endpoint = entry?;
                 debug!("endpoint: {:?}:{:?}", record.host, record.port);
-                let expiration = SslExpiration::from_addr(format!("{}:{}", record.host, record.port), &record.host, 1000).unwrap();
-                debug!("tls certificate for {}:{} expires in {} days", record.host, record.port, expiration.days());
+                let expiration_days = match SslExpiration::from_addr(format!("{}:{}", record.host, record.port), &record.host, 1000)
+                {
+                    Ok(exp) => exp.days(),
+                    Err(e) => {
+                        //panic!("could not check tls expiration: {:?}", e);
+                        error!("could not check tls expiration: {:?}", e);
+                        i32::MIN
+                    }
+                };
+
+                    // .unwrap();
+                debug!("tls certificate for {}:{} expires in {} days", record.host, record.port, expiration_days);
                 let mut attributes: Vec<(&str, &str)> = Vec::new();
                 attributes.push(("host", &record.host));
 
                 let port_str = format!("{}", record.port);
                 attributes.push(("port", &port_str));
 
-                expiration_buf.push_str(&expiration_metric.render_sample(Some(attributes.as_slice()), expiration.days()));
+                expiration_buf.push_str(&expiration_metric.render_sample(Some(attributes.as_slice()), expiration_days));
             }
 
 
